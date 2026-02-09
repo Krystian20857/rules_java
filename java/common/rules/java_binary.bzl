@@ -312,6 +312,16 @@ binaries and not libraries, due to the danger of namespace conflicts.
 </p>
             """,
         ),
+        "java_version": attr.string(
+            doc = """
+The Java language version to use for compiling this target.
+If specified, this will trigger a configuration transition that selects the
+appropriate Java toolchain based on the version. This allows different targets
+to be compiled with different JDK versions in the same build.
+
+Example values: "8", "11", "17", "21"
+            """,
+        ),
         "licenses": attr.license() if hasattr(attr, "license") else attr.string_list(),
         "_stub_template": attr.label(
             default = semantics.JAVA_STUB_TEMPLATE_LABEL,

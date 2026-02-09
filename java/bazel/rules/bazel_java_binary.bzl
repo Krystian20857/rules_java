@@ -22,6 +22,7 @@ load(
     "android_lint_subrule",
 )
 load("//java/common/rules:java_binary.bzl", "BASIC_JAVA_BINARY_ATTRIBUTES")
+load("//java/common/rules:java_version_transition.bzl", "java_version_transition")
 load("//java/common/rules:rule_util.bzl", "merge_attrs")
 load("//java/common/rules/impl:java_binary_deploy_jar.bzl", "create_deploy_archives")
 load("//java/common/rules/impl:java_binary_impl.bzl", "basic_java_binary", "binary_provider_helper")
@@ -336,6 +337,7 @@ def make_binary_rule(implementation, *, doc, attrs, executable = False, test = F
             "cpp_link": exec_group(toolchains = use_cc_toolchain(mandatory = False)),
         },
         subrules = [android_lint_subrule],
+        cfg = java_version_transition,
     )
 
 BASE_BINARY_ATTRS = merge_attrs(

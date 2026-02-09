@@ -3,6 +3,7 @@ load(":java_import_tests.bzl", "java_import_tests")
 load(":java_library_tests.bzl", "java_library_tests")
 load(":java_plugin_tests.bzl", "java_plugin_tests")
 load(":java_test_tests.bzl", "java_test_tests")
+load(":java_version_transition_tests.bzl", "java_version_transition_test_suite")
 load(":merge_attrs_tests.bzl", "merge_attrs_test_suite")
 
 package(default_applicable_licenses = ["@rules_java//:license"])
@@ -18,3 +19,5 @@ java_library_tests(name = "java_library_tests")
 java_import_tests(name = "java_import_tests")
 
 java_test_tests(name = "java_test_tests")
+
+java_version_transition_test_suite(name = "java_version_transition_tests")

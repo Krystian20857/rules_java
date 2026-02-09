@@ -19,6 +19,7 @@ Definition of java_library rule.
 load("//java/common:java_semantics.bzl", "semantics")
 load("//java/common/rules:android_lint.bzl", "android_lint_subrule")
 load("//java/common/rules:java_library.bzl", "JAVA_LIBRARY_ATTRS")
+load("//java/common/rules:java_version_transition.bzl", "java_version_transition")
 load("//java/common/rules/impl:bazel_java_library_impl.bzl", "bazel_java_library_rule")
 load("//java/private:java_info.bzl", "JavaInfo")
 
@@ -62,4 +63,5 @@ java_library = rule(
     fragments = ["java", "cpp"],
     toolchains = [semantics.JAVA_TOOLCHAIN],
     subrules = [android_lint_subrule],
+    cfg = java_version_transition,
 )
