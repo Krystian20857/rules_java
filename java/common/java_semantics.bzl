@@ -17,7 +17,31 @@ load("@rules_cc//cc/common:cc_helper.bzl", "cc_helper")
 
 # copybara: default visibility
 
-def _find_java_toolchain(ctx):
+def _find_java_toolchain(ctx, java_toolchain = None):
+    """Finds the Java toolchain to use for compilation.
+
+    Args:
+        ctx: The rule context.
+        java_toolchain: Optional explicit java_toolchain target. If provided,
+            this toolchain will be used instead of the one resolved via
+            toolchain resolution.
+
+    Returns:
+        A JavaToolchainInfo provider.
+    """
+    if java_toolchain:
+        # Use the explicitly specified toolchain.
+        # java_toolchain rule returns both JavaToolchainInfo directly and
+        # ToolchainInfo(java=JavaToolchainInfo). We access via ToolchainInfo
+        # to avoid circular dependencies.
+        if platform_common.ToolchainInfo in java_toolchain:
+            return java_toolchain[platform_common.ToolchainInfo].java
+        # Fallback: the target may be a java_toolchain that provides
+        # JavaToolchainInfo directly (for backwards compatibility)
+        for provider in java_toolchain:
+            if hasattr(provider, "source_version") and hasattr(provider, "target_version"):
+                return provider
+        fail("java_toolchain target does not provide a valid Java toolchain")
     return ctx.toolchains["@bazel_tools//tools/jdk:toolchain_type"].java
 
 def _find_java_runtime_toolchain(ctx):

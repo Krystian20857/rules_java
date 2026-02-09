@@ -17,6 +17,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
 load("//java/common:java_semantics.bzl", "semantics")
+load("//java/common/rules:java_toolchain.bzl", "JavaToolchainInfo")
 load("//java/private:java_common.bzl", "java_common")
 load("//java/private:java_info.bzl", "JavaInfo", "JavaPluginInfo")
 load(":basic_java_library.bzl", "BASIC_JAVA_LIBRARY_IMPLICIT_ATTRS")
@@ -310,6 +311,15 @@ only purpose is to support third-party libraries that require that their resourc
 found on the classpath as exactly <code>"myconfig.xml"</code>. It is only allowed on
 binaries and not libraries, due to the danger of namespace conflicts.
 </p>
+            """,
+        ),
+        "java_toolchain": attr.label(
+            providers = [JavaToolchainInfo],
+            doc = """
+The Java toolchain to use for compiling this target. If not specified,
+the default toolchain resolved via toolchain resolution will be used.
+This allows compiling different targets with different JDK versions or
+compiler configurations in the same build.
             """,
         ),
         "licenses": attr.license() if hasattr(attr, "license") else attr.string_list(),

@@ -60,7 +60,8 @@ def compile_action(
         add_exports = [],
         add_opens = [],
         bootclasspath = None,
-        javabuilder_jvm_flags = None):
+        javabuilder_jvm_flags = None,
+        java_toolchain = None):
     """
     Creates actions that compile Java sources, produce source jar, and produce header jar and returns JavaInfo.
 
@@ -123,6 +124,8 @@ def compile_action(
       add_opens: (list[str]) Allow this library to reflectively access the given <module>/<package>.
       bootclasspath: (BootClassPathInfo) The set of JDK APIs to compile this library against.
       javabuilder_jvm_flags: (list[str]) Additional JVM flags to pass to JavaBuilder.
+      java_toolchain: (Target) Optional explicit java_toolchain target to use for compilation.
+        If not specified, the toolchain resolved via Bazel's toolchain resolution is used.
 
     Returns:
       ((JavaInfo, {files_to_build: list[File],
@@ -142,7 +145,7 @@ def compile_action(
     java_info = _compile_private_for_builtins(
         ctx,
         output = output_class_jar,
-        java_toolchain = semantics.find_java_toolchain(ctx),
+        java_toolchain = semantics.find_java_toolchain(ctx, java_toolchain),
         source_files = source_files,
         source_jars = source_jars,
         resources = resources,

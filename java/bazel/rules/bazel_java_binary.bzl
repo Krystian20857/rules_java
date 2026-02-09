@@ -46,7 +46,8 @@ def bazel_base_binary_impl(ctx, is_test_rule_class):
 
     main_class = _check_and_get_main_class(ctx)
     coverage_main_class = main_class
-    coverage_config = helper.get_coverage_config(ctx, _get_coverage_runner(ctx))
+    java_toolchain = ctx.attr.java_toolchain
+    coverage_config = helper.get_coverage_config(ctx, _get_coverage_runner(ctx, java_toolchain))
     if coverage_config:
         main_class = coverage_config.main_class
 
@@ -73,6 +74,7 @@ def bazel_base_binary_impl(ctx, is_test_rule_class):
         executable,
         strip_as_default,
         is_test_rule_class = is_test_rule_class,
+        java_toolchain = java_toolchain,
     )
 
     if ctx.attr.use_testrunner:
@@ -125,9 +127,9 @@ def bazel_base_binary_impl(ctx, is_test_rule_class):
 
     return providers.values()
 
-def _get_coverage_runner(ctx):
+def _get_coverage_runner(ctx, java_toolchain = None):
     if ctx.configuration.coverage_enabled and ctx.attr.create_executable:
-        toolchain = semantics.find_java_toolchain(ctx)
+        toolchain = semantics.find_java_toolchain(ctx, java_toolchain)
         runner = toolchain.jacocorunner
         if not runner:
             fail("jacocorunner not set in java_toolchain: %s" % toolchain.label)

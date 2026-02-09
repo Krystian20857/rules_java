@@ -54,7 +54,8 @@ def basic_java_binary(
         executable,
         strip_as_default,
         extra_java_info = None,
-        is_test_rule_class = False):
+        is_test_rule_class = False,
+        java_toolchain = None):
     """Creates actions for compiling and linting java sources, coverage support, and sources jar (_deploy-src.jar).
 
     Args:
@@ -70,6 +71,7 @@ def basic_java_binary(
         strip_as_default: (bool) Whether this target outputs a stripped launcher and deploy jar
         extra_java_info: (JavaInfo) additional outputs to merge
         is_test_rule_class: (bool) Whether this rule is a test rule
+        java_toolchain: (Target) Optional explicit java_toolchain target to use for compilation
 
     Returns:
         Tuple(
@@ -100,7 +102,7 @@ def basic_java_binary(
     if hasattr(ctx.files, "classpath_resources"):
         classpath_resources.extend(ctx.files.classpath_resources)
 
-    toolchain = semantics.find_java_toolchain(ctx)
+    toolchain = semantics.find_java_toolchain(ctx, java_toolchain)
     timezone_data = [toolchain._timezone_data] if toolchain._timezone_data else []
     target, common_info = basic_java_library(
         ctx,
@@ -119,6 +121,7 @@ def basic_java_binary(
         add_opens = ctx.attr.add_opens,
         bootclasspath = ctx.attr.bootclasspath,
         is_library = False,
+        java_toolchain = java_toolchain,
     )
     java_info = target["JavaInfo"]
     compilation_info = java_info.compilation_info

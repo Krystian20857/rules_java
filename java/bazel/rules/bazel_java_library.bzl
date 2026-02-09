@@ -39,6 +39,7 @@ def _proxy(ctx):
         ctx.attr.add_opens,
         ctx.attr.bootclasspath,
         ctx.attr.javabuilder_jvm_flags,
+        ctx.attr.java_toolchain,
     ).values()
 
 java_library = rule(
