@@ -44,7 +44,31 @@ def _find_java_toolchain(ctx, java_toolchain = None):
         fail("java_toolchain target does not provide a valid Java toolchain")
     return ctx.toolchains["@bazel_tools//tools/jdk:toolchain_type"].java
 
-def _find_java_runtime_toolchain(ctx):
+def _find_java_runtime_toolchain(ctx, java_runtime = None):
+    """Finds the Java runtime toolchain to use for execution.
+
+    Args:
+        ctx: The rule context.
+        java_runtime: Optional explicit java_runtime target. If provided,
+            this runtime will be used instead of the one resolved via
+            toolchain resolution.
+
+    Returns:
+        A JavaRuntimeInfo provider.
+    """
+    if java_runtime:
+        # Use the explicitly specified runtime.
+        # java_runtime rule returns both JavaRuntimeInfo directly and
+        # ToolchainInfo(java_runtime=JavaRuntimeInfo). We access via ToolchainInfo
+        # to avoid circular dependencies.
+        if platform_common.ToolchainInfo in java_runtime:
+            return java_runtime[platform_common.ToolchainInfo].java_runtime
+        # Fallback: the target may be a java_runtime that provides
+        # JavaRuntimeInfo directly (for backwards compatibility)
+        for provider in java_runtime:
+            if hasattr(provider, "java_home"):
+                return provider
+        fail("java_runtime target does not provide a valid Java runtime")
     return ctx.toolchains["@bazel_tools//tools/jdk:runtime_toolchain_type"].java_runtime
 
 def _get_default_resource_path(path, segment_extractor):

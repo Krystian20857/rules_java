@@ -78,7 +78,7 @@ def bazel_base_binary_impl(ctx, is_test_rule_class):
     )
 
     if ctx.attr.use_testrunner:
-        _java_runtime_version = semantics.find_java_runtime_toolchain(ctx).version
+        _java_runtime_version = semantics.find_java_runtime_toolchain(ctx, ctx.attr.java_runtime).version
         if _java_runtime_version >= 17 and _java_runtime_version < 24:
             jvm_flags.append("-Djava.security.manager=allow")
         test_class = ctx.attr.test_class if hasattr(ctx.attr, "test_class") else ""
@@ -100,7 +100,7 @@ def bazel_base_binary_impl(ctx, is_test_rule_class):
     runfiles = default_info.runfiles
 
     if executable:
-        runtime_toolchain = semantics.find_java_runtime_toolchain(ctx)
+        runtime_toolchain = semantics.find_java_runtime_toolchain(ctx, ctx.attr.java_runtime)
         runfiles = runfiles.merge(ctx.runfiles(transitive_files = runtime_toolchain.files))
 
     test_support = helper.get_test_support(ctx)
@@ -214,7 +214,7 @@ def _find_launcher_maker(ctx):
     return ctx.executable._windows_launcher_maker
 
 def _create_stub(ctx, java_attrs, launcher, executable, jvm_flags, main_class, coverage_main_class):
-    java_runtime_toolchain = semantics.find_java_runtime_toolchain(ctx)
+    java_runtime_toolchain = semantics.find_java_runtime_toolchain(ctx, ctx.attr.java_runtime)
     java_executable = helper.get_java_executable(ctx, java_runtime_toolchain, launcher)
     workspace_name = ctx.workspace_name
     workspace_prefix = workspace_name + ("/" if workspace_name else "")
@@ -290,7 +290,7 @@ def _create_windows_exe_launcher(ctx, java_executable, classpath, main_class, jv
         launch_info.add(coverage_main_class, format = "jacoco_main_class=%s")
     launch_info.add_joined(classpath, map_each = _short_path, join_with = ";", format_joined = "classpath=%s", omit_if_empty = False)
     launch_info.add_joined(jvm_flags_for_launcher, join_with = "\t", format_joined = "jvm_flags=%s", omit_if_empty = False)
-    launch_info.add(semantics.find_java_runtime_toolchain(ctx).java_home_runfiles_path, format = "jar_bin_path=%s/bin/jar.exe")
+    launch_info.add(semantics.find_java_runtime_toolchain(ctx, ctx.attr.java_runtime).java_home_runfiles_path, format = "jar_bin_path=%s/bin/jar.exe")
 
     # TODO(b/295221112): Change to use the "launcher" attribute (only windows use a fixed _launcher attribute)
     launcher_artifact = ctx.executable._launcher

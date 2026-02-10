@@ -322,6 +322,15 @@ This allows compiling different targets with different JDK versions or
 compiler configurations in the same build.
             """,
         ),
+        "java_runtime": attr.label(
+            providers = [java_common.JavaRuntimeInfo],
+            doc = """
+The Java runtime to use for executing this binary. If not specified,
+the default runtime resolved via toolchain resolution will be used.
+This allows running different binaries with different JDK versions
+in the same build.
+            """,
+        ),
         "licenses": attr.license() if hasattr(attr, "license") else attr.string_list(),
         "_stub_template": attr.label(
             default = semantics.JAVA_STUB_TEMPLATE_LABEL,
